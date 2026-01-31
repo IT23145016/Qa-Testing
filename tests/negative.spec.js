@@ -70,40 +70,39 @@ test.describe('Negative test cases – features the translator DOES NOT have', (
     test(`${tc.id} - ${tc.name} → should NOT intelligently correct`, async ({ page }) => {
       await page.goto(baseURL, { waitUntil: 'networkidle' });
 
-      // Input textarea (only one exists)
+     
       const inputBox = page.locator('textarea').first();
       await expect(inputBox).toBeVisible({ timeout: 15000 });
       await expect(inputBox).toBeEditable();
 
-      // Output div based on your inspection
       const outputBox = page.locator(
         'div.w-full.h-80.p-3.rounded-lg.ring-1.ring-slate-300.whitespace-pre-wrap.overflow-y-auto.flex-grow.bg-slate-50'
       );
 
-      // Fallback: look for element near "Sinhala" text
+     
       const fallbackOutput = page.locator('text=/Sinhala/i')
         .locator('xpath=following::*[self::div or self::p or self::span][1]');
 
       let finalOutput = outputBox;
 
-      // Safe visibility check
+      
       const isPrimaryVisible = await outputBox.isVisible().catch(() => false);
       if (!isPrimaryVisible) {
         finalOutput = fallbackOutput;
       }
 
-      // Ensure output element is in the DOM
+      
       await expect(finalOutput).toBeAttached({ timeout: 20000 });
 
-      // Trigger output rendering if lazy-loaded
+      
       await inputBox.fill('test');
       await page.waitForTimeout(1200);
       await inputBox.clear();
 
-      // Fill the actual test input
+      
       await inputBox.fill(tc.input);
 
-      // Wait for real Sinhala output to appear
+      
       await expect.poll(async () => {
         const text = await finalOutput.innerText();
         return text.trim();
@@ -113,14 +112,11 @@ test.describe('Negative test cases – features the translator DOES NOT have', (
         message: `No Sinhala translation appeared for input: ${tc.input}`
       }).toMatch(/[\u0D80-\u0DFF]/);
 
-      await page.waitForTimeout(800); // final settle
+      await page.waitForTimeout(800); 
 
       const actual = (await finalOutput.innerText()).trim();
 
-      // ────────────────────────────────────────────────
-      // FLIPPED ASSERTION → tests will FAIL intentionally
-      // This makes the report show red failures highlighting the limitation
-      // ────────────────────────────────────────────────
+      
       expect(
         actual,
         `NEGATIVE CASE ${tc.id} - ${tc.name}\n\n` +

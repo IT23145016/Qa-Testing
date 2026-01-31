@@ -15,11 +15,10 @@ test.describe('Positive UI Test - Clear Button Functionality', () => {
     );
     await expect(outputBox).toBeAttached({ timeout: 15000 });
 
-    // Type short phrase slowly
+    
     await inputBox.focus();
     await inputBox.type('mama gedhara yanavaa', { delay: 100 });
 
-    // Wait fixed time (no poll to avoid long hangs)
     await page.waitForTimeout(5000);
 
     // Optional: log what we see
